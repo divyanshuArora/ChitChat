@@ -6,9 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 
 import com.example.chitchat.R
 import com.example.chitchat.databinding.FragmentUsersBinding
+import com.example.chitchat.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 class Users : Fragment() {
@@ -36,6 +39,9 @@ class Users : Fragment() {
 
     private fun getUserData()
     {
+
+        var userViewModel:UserViewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
+
 
 
 
