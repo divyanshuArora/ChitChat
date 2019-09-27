@@ -15,6 +15,7 @@ class Splash : AppCompatActivity() {
 
     private var activitySplashBinding:ActivitySplashBinding ?= null
     var sharedPreferences: SharedPreference ?= null
+    var user_id = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,15 +24,19 @@ class Splash : AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN)
         activitySplashBinding = DataBindingUtil.setContentView(this,R.layout.activity_splash)
 
+        if (sharedPreferences!!.getString("user_id")!=null)
+        {
+            user_id = sharedPreferences!!.getString("user_id")
+        }
+
+
+
         splashFun()
     }
 
     private fun splashFun()
     {
-
-
-
-            Handler().postDelayed(
+        Handler().postDelayed(
                 {
                     if (!sharedPreferences!!.getLoginSession())
                     {
@@ -39,7 +44,7 @@ class Splash : AppCompatActivity() {
                         finish()
                     }
                     else {
-                        startActivity<Dashboard>()
+                        startActivity<Dashboard>("user_id" to user_id)
                         finish()
                     }
                 }, 3000

@@ -15,7 +15,7 @@ class Users : Fragment() {
 
     var fragmentUsersBinding: FragmentUsersBinding ?= null
     var auth: FirebaseAuth ?= null
-    //var userListnerRegistration: ListenerRegistration
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -30,11 +30,16 @@ class Users : Fragment() {
 
         auth = FirebaseAuth.getInstance()
 
-
-
-
-
+        getUserData()
         return view
+    }
+
+    private fun getUserData()
+    {
+
+
+
+
     }
 
 

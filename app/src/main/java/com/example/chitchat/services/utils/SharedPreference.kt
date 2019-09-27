@@ -12,10 +12,17 @@ class SharedPreference(context: Context)
 
     val editor : SharedPreferences.Editor = sharedPreferences!!.edit()
 
-    fun addString(key: String):String
+    fun addString(key: String,value:String)
     {
-        return sharedPreferences!!.getString(key,null)!!
+        editor.putString(key,value)
+        editor.commit()
     }
+
+    fun getString(key:String):String
+    {
+        return sharedPreferences!!.getString(key,"")!!
+    }
+
 
     fun getLoginSession():Boolean
     {

@@ -1,5 +1,6 @@
 package com.example.chitchat.view.ui.activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -40,24 +41,8 @@ class OtpActivity : AppCompatActivity() {
         activityOtpBinding!!.registerButton.setOnClickListener {
 
             otp = activityOtpBinding!!.editTextOTP.text.toString()
-
-            if (otp.isEmpty()) {
-
-                activityOtpBinding!!.editTextOTP.error = "Error"
-                return@setOnClickListener
-            }
-            else if(otp.equals(code))
-            {
-                verifyCode(otp)
-            }
-            else
-            {
-                Toast.makeText(applicationContext,"Code Not Matched",Toast.LENGTH_SHORT).show()
-            }
+            verifyCode(otp)
         }
-
-
-
     }
 
 
@@ -73,15 +58,13 @@ class OtpActivity : AppCompatActivity() {
     }
 
 
-
     val mCallbacks = object: PhoneAuthProvider.OnVerificationStateChangedCallbacks()
     {
         override fun onCodeSent(p0: String, p1: PhoneAuthProvider.ForceResendingToken)
         {
             super.onCodeSent(p0, p1)
-            Log.d("Register","token: $p1")
             mverificationId = p0
-
+            Log.d("Register","token: $mverificationId")
         }
 
         override fun onCodeAutoRetrievalTimeOut(p0: String) {
@@ -91,16 +74,17 @@ class OtpActivity : AppCompatActivity() {
 
         override fun onVerificationCompleted(p0: PhoneAuthCredential)
         {
-            Log.d("OtpActivity","completed: ${p0.smsCode}")
-            code = p0.smsCode.toString()
 
-            Toast.makeText(applicationContext,"Completed",Toast.LENGTH_SHORT).show()
+            if (p0.smsCode!= null) {
+                code = p0.smsCode!!
+                Log.d("OtpActivity", "completed: $code")
+            }
 
         }
 
         override fun onVerificationFailed(p0: FirebaseException)
         {
-        Log.d("OtpActivity","failed: $p0")
+            Log.d("OtpActivity","failed: ${p0.message}")
             Toast.makeText(applicationContext,"Failed",Toast.LENGTH_SHORT).show()
 
         }
@@ -117,7 +101,7 @@ class OtpActivity : AppCompatActivity() {
 
             }
             mverificationId.isEmpty() -> {
-                Log.d("OtpActivity","Otp Not Sent")
+                Log.d("OtpActivity","Number Blocked From Firebase")
                 return
 
             }
@@ -127,57 +111,42 @@ class OtpActivity : AppCompatActivity() {
                 signInWithCredential(credential)
             }
         }
-
     }
 
-    private fun signInWithCredential(phoneAuthCredential: PhoneAuthCredential)
-    {
-        try {
-            auth!!.signInWithCredential(phoneAuthCredential)
-                .addOnCompleteListener(this@OtpActivity) {
+    private fun signInWithCredential(phoneAuthCredential: PhoneAuthCredential) {
 
-                    @Override
-                    fun onComplete(@NonNull task: Task<AuthResult>) {
-                        if (task.isSuccessful) {
-                            //verification successful we will start the profile activity
-                            Log.d("OtpActivity", "Success")
+        FirebaseAuth.getInstance().signInWithCredential(phoneAuthCredential)
+            .addOnCompleteListener(this@OtpActivity,
+                OnCompleteListener<AuthResult> { task ->
+                    if (task.isSuccessful) {
+                        //verification successful we will start the profile activity
+                        Log.d("OtpActivity", "Success")
 
-                            val user_id = FirebaseAuth.getInstance().currentUser.toString()
-                            Log.d("OtpActivity","userID: $user_id")
-                            sharedPreferences!!.setLoginSession(user_id)
+                        val user_id = FirebaseAuth.getInstance().currentUser.toString()
+                        Log.d("OtpActivity", "userId: $user_id")
+                        sharedPreferences!!.setLoginSession(user_id)
+                        //sharedPreferences!!.setLoginSession("true")
+                        // startActivity<Dashboard>()
 
-                            //sharedPreferences!!.setLoginSession("true")
-                            startActivity<Dashboard>()
+                        val intent = Intent(this@OtpActivity, Dashboard::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
 
-                            finish()
-                            Toast.makeText(this@OtpActivity, "Success", Toast.LENGTH_SHORT).show()
-
-
-                        } else {
-
-                            var message = "Somthing is wrong, we will fix it soon..."
-                            Log.d("OtpActivity", message)
-                            Toast.makeText(this@OtpActivity, "" + message, Toast.LENGTH_SHORT)
-                                .show()
-
-                        }
-                        if (task.exception is FirebaseAuthInvalidCredentialsException)
-                        {
-                           var message = "Invalid code entered..."
-                            Toast.makeText(this@OtpActivity, "" + message, Toast.LENGTH_SHORT).show()
-                        }
-
-
-                        Log.d("OtpActivity", "Failed")
+                        Toast.makeText(this@OtpActivity, "Success", Toast.LENGTH_SHORT).show()
+                        finish()
                     }
-                }
-        }
-        catch (e:Exception)
-        {
-            Log.d("OtpActivity", "Exception: $e")
-        }
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        var message = "Invalid code entered...  ${task.exception}"
+                        Toast.makeText(this@OtpActivity, "" + message, Toast.LENGTH_SHORT).show()
+                    }
+                })
 
+                }
     }
 
 
-}
+
+
+
+
