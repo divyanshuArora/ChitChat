@@ -7,8 +7,7 @@
     >
 
 
-    <data class="userItemBinding">
-
+    <data class="UserItemBinding">
         <variable
             name="UserModelBind"
             type="com.example.chitchat.services.model.UserModel" />
@@ -56,7 +55,7 @@
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="User Name"
+            android:text="@{UserModelBind.name}"
             android:textColor="#000000"
             android:textSize="@dimen/_14ssp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -70,15 +69,15 @@
             android:id="@+id/user_bio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="User Bio"
+            android:text="@{UserModelBind.email}"
             android:textColor="#F1860C"
             android:textSize="@dimen/_12ssp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.17"
+            app:layout_constraintHorizontal_bias="0.263"
             app:layout_constraintStart_toEndOf="@+id/user_image"
             app:layout_constraintTop_toBottomOf="@+id/user_name"
-            app:layout_constraintVertical_bias="0.31" />
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
